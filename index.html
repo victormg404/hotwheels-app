@@ -1,1 +1,36 @@
-test
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hotwheels Collection</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <h1>Hotwheels Collection</h1>
+
+    <h2>Añadir coche</h2>
+    <form id="addCarForm">
+      <input
+        type="text"
+        id="car_id"
+        placeholder="Car ID (ej: JBY89)"
+        required
+      />
+      <input type="text" id="car_name" placeholder="Nombre" required />
+      <input type="text" id="car_color" placeholder="Color" required />
+      <label> <input type="checkbox" id="car_treasure" /> Treasure Hunt </label>
+      <input type="file" id="carFile" required />
+      <button type="submit">Añadir</button>
+    </form>
+
+    <h2>Lista de coches</h2>
+    <button onclick="getAllCars()">Mostrar todos</button>
+    <div id="carsList" class="cars-container"></div>
+
+    <script src="js/app.js"></script>
+  </body>
+</html>
