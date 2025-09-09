@@ -1,7 +1,8 @@
 const API = "https://hotwheels-api.victor-sql.workers.dev";
 
-async function uploadPhoto(file) {
-  const key = `cars/${file.name}`;
+async function uploadPhoto(file, carId) {
+  const today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+  const key = `cars/${carId}_${today}_${file.name}`;
   const res = await fetch(API + `/${key}`, {
     method: "PUT",
     headers: { "Content-Type": file.type },
@@ -44,7 +45,7 @@ document.getElementById("addCarForm").onsubmit = async (e) => {
 
   let photoUrl = "";
   try {
-    photoUrl = await uploadPhoto(file);
+    photoUrl = await uploadPhoto(file, carId);
   } catch (err) {
     return alert("Error subiendo la foto: " + err.message);
   }
