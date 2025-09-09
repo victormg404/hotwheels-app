@@ -107,3 +107,51 @@ async function getAllCars() {
     alert("Error obteniendo coches: " + err.message);
   }
 }
+
+async function getCarById() {
+  const carId = document.getElementById("searchCarId").value.trim();
+  if (!carId) {
+    return alert("Debes introducir un ID de coche.");
+  }
+
+  try {
+    const res = await fetch(
+      API + `/getCarById?id=${encodeURIComponent(carId)}`
+    );
+    if (!res.ok) {
+      if (res.status === 404) {
+        return alert(`No se encontró ningún coche con ID ${carId}`);
+      }
+      return alert("Error buscando el coche.");
+    }
+
+    const car = await res.json();
+
+    const carsList = document.getElementById("carsList");
+    carsList.innerHTML = "";
+
+    const card = document.createElement("div");
+    card.className = "car-card" + (car.car_treasure === "1" ? " treasure" : "");
+
+    const img = document.createElement("img");
+    if (car.car_photo) {
+      img.src = `${API}/getCarPhoto?url=${encodeURIComponent(car.car_photo)}`;
+    } else {
+      img.src = "https://via.placeholder.com/100x60?text=Sin+Foto";
+    }
+    img.alt = car.car_name;
+
+    const info = document.createElement("div");
+    info.innerHTML = `
+      <strong>${car.car_id} - ${car.car_name}</strong><br>
+      Color: ${car.car_color}<br>
+      ${car.car_treasure === "1" ? "🔥 Treasure Hunt" : ""}
+    `;
+
+    card.appendChild(img);
+    card.appendChild(info);
+    carsList.appendChild(card);
+  } catch (err) {
+    alert("Error buscando el coche: " + err.message);
+  }
+}
