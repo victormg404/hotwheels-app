@@ -11,6 +11,10 @@ h1 {
   color: #ff4500; /* naranja Hot Wheels */
 }
 
+h2 {
+  text-align: center;
+}
+
 form,
 .cars-container {
   background: white;
@@ -19,11 +23,15 @@ form,
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
 }
 
 input[type="text"],
 input[type="file"] {
-  width: 100%;
+  width: 95%;
   padding: 10px;
   margin: 8px 0;
   border: 1px solid #ccc;
@@ -67,4 +75,12 @@ button:hover {
 .car-card.treasure {
   border-color: gold;
   box-shadow: 0 0 10px gold;
+}
+
+.button-all-cars {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
 }

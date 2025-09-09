@@ -1,4 +1,4 @@
-const API = "http://127.0.0.1:8787";
+const API = "https://hotwheels-api.victor-sql.workers.dev";
 
 async function uploadPhoto(file) {
   const key = `cars/${file.name}`;
@@ -14,7 +14,30 @@ async function uploadPhoto(file) {
 document.getElementById("addCarForm").onsubmit = async (e) => {
   e.preventDefault();
 
+  const carId = document.getElementById("car_id").value.trim();
+  const isTreasure = document.getElementById("car_treasure").checked
+    ? "1"
+    : "0";
+
   const file = document.getElementById("carFile").files[0];
+
+  try {
+    const res = await fetch(
+      API + `/getCarById?id=${encodeURIComponent(carId)}`
+    );
+
+    if (res.ok) {
+      const existingCar = await res.json();
+      if (isTreasure === existingCar.car_treasure) {
+        return alert(`Ya existe un coche con ID ${carId}`);
+      }
+    } else if (res.status !== 404) {
+      return alert("Error comprobando si el coche existe.");
+    }
+  } catch (err) {
+    return alert("Error comprobando si el coche existe: " + err.message);
+  }
+
   if (!file) {
     return alert("Debes seleccionar una foto antes de añadir el coche.");
   }
@@ -27,11 +50,11 @@ document.getElementById("addCarForm").onsubmit = async (e) => {
   }
 
   const body = {
-    car_id: document.getElementById("car_id").value,
+    car_id: carId,
     car_name: document.getElementById("car_name").value,
     car_color: document.getElementById("car_color").value,
     car_photo: photoUrl,
-    car_treasure: document.getElementById("car_treasure").checked ? "1" : "0",
+    car_treasure: isTreasure,
   };
 
   try {
@@ -60,8 +83,13 @@ async function getAllCars() {
         "car-card" + (car.car_treasure === "1" ? " treasure" : "");
 
       const img = document.createElement("img");
-      img.src =
-        car.car_photo || "https://via.placeholder.com/100x60?text=Sin+Foto";
+
+      if (car.car_photo) {
+        img.src = `${API}/getCarPhoto?url=${encodeURIComponent(car.car_photo)}`;
+      } else {
+        img.src = "https://via.placeholder.com/100x60?text=Sin+Foto";
+      }
+
       img.alt = car.car_name;
 
       const info = document.createElement("div");
@@ -77,5 +105,53 @@ async function getAllCars() {
     });
   } catch (err) {
     alert("Error obteniendo coches: " + err.message);
+  }
+}
+
+async function getCarById() {
+  const carId = document.getElementById("searchCarId").value.trim();
+  if (!carId) {
+    return alert("Debes introducir un ID de coche.");
+  }
+
+  try {
+    const res = await fetch(
+      API + `/getCarById?id=${encodeURIComponent(carId)}`
+    );
+    if (!res.ok) {
+      if (res.status === 404) {
+        return alert(`No se encontró ningún coche con ID ${carId}`);
+      }
+      return alert("Error buscando el coche.");
+    }
+
+    const car = await res.json();
+
+    const carsList = document.getElementById("carsList");
+    carsList.innerHTML = "";
+
+    const card = document.createElement("div");
+    card.className = "car-card" + (car.car_treasure === "1" ? " treasure" : "");
+
+    const img = document.createElement("img");
+    if (car.car_photo) {
+      img.src = `${API}/getCarPhoto?url=${encodeURIComponent(car.car_photo)}`;
+    } else {
+      img.src = "https://via.placeholder.com/100x60?text=Sin+Foto";
+    }
+    img.alt = car.car_name;
+
+    const info = document.createElement("div");
+    info.innerHTML = `
+      <strong>${car.car_id} - ${car.car_name}</strong><br>
+      Color: ${car.car_color}<br>
+      ${car.car_treasure === "1" ? "🔥 Treasure Hunt" : ""}
+    `;
+
+    card.appendChild(img);
+    card.appendChild(info);
+    carsList.appendChild(card);
+  } catch (err) {
+    alert("Error buscando el coche: " + err.message);
   }
 }
